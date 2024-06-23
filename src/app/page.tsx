@@ -11,7 +11,7 @@ export default function Home() {
     { name: "Driver",  current: true, component: <Driver /> },
     { name: "Vehicle",  current: false, component: <Vehicle /> },
     { name: "Assign Vehicles",  current: false, component: <Assigned /> },
-    { name: "Transfer",  current: false, component: <Transfer /> },
+    { name: "Transfer History",  current: false, component: <Transfer /> },
 ]);
   return (
     <div className="container">

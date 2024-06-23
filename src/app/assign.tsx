@@ -1,32 +1,26 @@
-import AddDriverForm from "@/components/feature/add-driver";
-import AddVehicleForm from "@/components/feature/add-vehicle";
+import AssignVehicle from "@/components/feature/assign-vehicle";
 import { DataTable } from "@/components/ui/data-table";
 import { SERVER_URL } from "@/config/constant";
-import {  vehicleApiResponse } from "@/types/common.types";
+import { AssignedVehicle } from "@/types/common.types";
 import { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
-interface Vehicle {
-  id: number;
-  vehicleNumber: string;
-  vehicleType: string;
-  pucCertificate: string;
-  pucCertificateId: number;
-  insuranceCertificate: string;
-  insuranceCertificateId: number;
-  isAssigned: boolean;
-}
 
 // Define the type for the API response
-
-export default function Vehicle() {
+interface ApiResponse {
+  status: number;
+  data: {
+    result: AssignedVehicle[];
+  };
+}
+export default function Assigned() {
   const [isNew, setIsNew] = useState(false);
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [vehicles, setVehicles] = useState<AssignedVehicle[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    fetch(`${SERVER_URL}/vehicles`)
+    fetch(`${SERVER_URL}/assign-vehicles`)
       .then(response => response.json())
-      .then((data: vehicleApiResponse) => {
+      .then((data: ApiResponse) => {
         if (data.status === 200) {
           setVehicles(data.data.result);
         } else {
@@ -40,32 +34,39 @@ export default function Vehicle() {
       });
   }, [isNew]);
 
-  const columns: ColumnDef<Vehicle>[] = [
+  const columns: ColumnDef<AssignedVehicle>[] = [
     {
-      accessorKey: "vehicleNumber",
+      accessorKey: "vehicle.vehicleNumber",
       header: "Vehicle Number",
     },
     {
-      accessorKey: "vehicleType",
+      accessorKey: "vehicle.vehicleType",
       header: "Vehicle Type",
     },
     {
-      accessorKey: "pucCertificate",
+      accessorKey: "vehicle.pucCertificate",
       header: "PUC Certificate",
     },
     {
-      accessorKey: "insuranceCertificate",
+      accessorKey: "vehicle.insuranceCertificate",
       header: "Insurance Certificate",
+    },
+    {
+      accessorKey: "driver.name",
+      header: "Driver Name",
+    },
+    {
+      accessorKey: "driver.phoneNumber",
+      header: "Phone Number ",
     },
 
   ]
-
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
   return (
     <div className="container" >
-      <AddVehicleForm setIsNew={setIsNew} />
+      <AssignVehicle setIsNew={setIsNew} />
       <DataTable columns={columns} data={vehicles} />
     </div>
   );

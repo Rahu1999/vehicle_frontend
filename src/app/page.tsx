@@ -4,7 +4,7 @@ import { useState } from "react";
 import Transfer from "./transfer";
 import Driver from "./driver";
 import Vehicle from "./vehicle";
-import Assigned from "./assigned";
+import Assigned from "./assign";
 
 export default function Home() {
   const [tabs, setTabs] = useState<Tab[]>([

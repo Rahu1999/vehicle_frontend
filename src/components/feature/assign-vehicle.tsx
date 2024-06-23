@@ -5,9 +5,20 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { SERVER_URL } from '@/config/constant';
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
-import { ChevronDown, CheckIcon, Download, Eye } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react"
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
 import { Vehicle, vehicleApiResponse } from '@/types/common.types';
 import { cn } from '@/lib/utils';
 
@@ -35,9 +46,13 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
     const [openVehicle, setOpenVehicle] = React.useState(false);
     const [vehicles, setVehicles] = React.useState<Vehicle[]>([]);
 
+    const [selectedDriver, setSelectedDriver] = React.useState<Vehicle>();
+    const [openDriver, setOpenDriver] = React.useState(false);
+    const [drivers, setDrivers] = React.useState<Vehicle[]>([]);
+
 
     useEffect(() => {
-        fetch(`${SERVER_URL}/vehicles`)
+        fetch(`${SERVER_URL}/vehicles/unassign`)
             .then(response => response.json())
             .then((data: vehicleApiResponse) => {
                 if (data.status === 200) {
@@ -101,41 +116,48 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
                 {({ setFieldValue, handleChange, handleBlur, values, isSubmitting }) => (
                     <Form className="flex flex-col md:flex-row md:items-center md:gap-4 mt-4 ">
                         <div className="mb-4 md:mb-0">
-                            <Label className="font-semibold" >Select Exam</Label>
+                            <Label className="font-semibold" >Select Vehicle</Label>
                             <div className={`mt-2 `} >
-                                <Popover open={openVehicle} onOpenChange={setOpenVehicle} >
-                                    <PopoverTrigger asChild >
+                                <Popover open={openVehicle} onOpenChange={setOpenVehicle}>
+                                    <PopoverTrigger asChild>
                                         <Button
                                             variant="outline"
                                             role="combobox"
-                                            aria-expanded={openVehicle}
-                                            className="w-full justify-between"
+                                            aria-expanded={open}
+                                            className="w-[200px] justify-between"
                                         >
-                                            {selectedVehicle ? selectedVehicle.vehicleNumber : "Select Vehicle"}
-
-                                            <ChevronDown />
+                                            {selectedVehicle
+                                                ? vehicles.find((vehicle) => vehicle.vehicleNumber === selectedVehicle.vehicleNumber)?.vehicleNumber
+                                                : "Select Vehicle..."}
+                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                         </Button>
                                     </PopoverTrigger>
-                                    <PopoverContent className="p-0 w-full ">
-                                        <Command >
-                                            <CommandInput placeholder="Search Exam..." className="h-9" />
-                                            <CommandEmpty>No Vehicle found.</CommandEmpty>
-                                            <CommandGroup className='max-h-96  overflow-y-auto'>
-                                                {vehicles.map((vehicle) => (
-                                                    <CommandItem
-                                                        key={vehicle.id}
-                                                        onSelect={() => setSelectedVehicle(vehicle)}
-                                                    >
-                                                        {vehicle.vehicleNumber}
-                                                        <CheckIcon
-                                                            className={cn(
-                                                                "ml-auto h-4 w-4",
-                                                                selectedVehicle?.vehicleNumber === vehicle.vehicleNumber ? "opacity-100" : "opacity-0"
-                                                            )}
-                                                        />
-                                                    </CommandItem>
-                                                ))}
-                                            </CommandGroup>
+                                    <PopoverContent className="w-[200px] p-0">
+                                        <Command>
+                                            <CommandInput placeholder="Search Vehicle..." />
+                                            <CommandList>
+                                                <CommandEmpty>No Vehicle found.</CommandEmpty>
+                                                <CommandGroup>
+                                                    {vehicles.map((vehicle) => (
+                                                        <CommandItem
+                                                            key={vehicle.vehicleNumber}
+                                                            value={vehicle.vehicleNumber}
+                                                            onSelect={(currentValue) => {
+                                                                setSelectedVehicle(vehicle)
+                                                                setOpenVehicle(false)
+                                                            }}
+                                                        >
+                                                            <Check
+                                                                className={cn(
+                                                                    "mr-2 h-4 w-4",
+                                                                    selectedVehicle?.vehicleNumber === vehicle.vehicleNumber ? "opacity-100" : "opacity-0"
+                                                                )}
+                                                            />
+                                                            {vehicle.vehicleNumber}
+                                                        </CommandItem>
+                                                    ))}
+                                                </CommandGroup>
+                                            </CommandList>
                                         </Command>
                                     </PopoverContent>
                                 </Popover>

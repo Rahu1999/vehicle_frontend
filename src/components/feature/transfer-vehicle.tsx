@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/popover"
 import { AssignedVehicle, AssignedVehicleApiResponse, Driver, Vehicle, driverApiResponse, vehicleApiResponse } from '@/types/common.types';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import { getCurrentFormattedDate } from '@/utils/common';
 
 interface AddDriverFormProps {
     setIsNew: (isNew: boolean) => void;
@@ -102,12 +104,18 @@ const TransferVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
             }
 
             const result = await response.json();
-            alert('Vehicle added successfully!');
+            toast(`Vehicle Transfer successfully!`, {
+                description: getCurrentFormattedDate(),
+                action: {
+                    label: "Success",
+                    onClick: () => console.info("Success"),
+                },
+            })
             setIsNew(true)
             setIsComplete(true)
         } catch (error) {
             console.error('Error:', error);
-            alert('There was an error adding the vehicle.');
+            toast.error(`${error}`)
         } finally {
 
         }
@@ -128,7 +136,8 @@ const TransferVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
                                     className="w-[300px] justify-between"
                                 >
                                     {selectedVehicle
-                                        ? vehicles.find((vehicle) => vehicle.id === selectedVehicle.id)?.vehicle.vehicleNumber
+                                        ? (vehicles.find((vehicle) => vehicle.id === selectedVehicle.id)?.vehicle.vehicleNumber +"-" +
+                                        vehicles.find((vehicle) => vehicle.id === selectedVehicle.id)?.driver.name)
                                         : "Select Vehicle..."}
                                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                 </Button>

@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/popover"
 import { Driver, Vehicle, driverApiResponse, vehicleApiResponse } from '@/types/common.types';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import { getCurrentFormattedDate } from '@/utils/common';
 
 interface AddDriverFormProps {
     setIsNew: (isNew: boolean) => void;
@@ -99,12 +101,18 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
             }
 
             const result = await response.json();
-            alert('Vehicle added successfully!');
+            toast(`Vehicle assign successfully!`, {
+                description: getCurrentFormattedDate(),
+                action: {
+                    label: "Success",
+                    onClick: () => console.info("Success"),
+                },
+            })
             setIsNew(true)
             setIsComplete(true)
         } catch (error) {
             console.error('Error:', error);
-            alert('There was an error adding the vehicle.');
+            toast.error(`There was an error adding the vehicle.`)
         } finally {
 
         }

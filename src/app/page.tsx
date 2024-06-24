@@ -5,6 +5,7 @@ import Transfer from "./transfer";
 import Driver from "./driver";
 import Vehicle from "./vehicle";
 import Assigned from "./assign";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function Home() {
   const [tabs, setTabs] = useState<Tab[]>([
@@ -16,6 +17,10 @@ export default function Home() {
   return (
     <div className="container">
       <CustomTabBar tabs={tabs} setTabs={setTabs}/>
+      <Toaster
+            richColors
+            position="top-right"
+          />
     </div>
   );
 }

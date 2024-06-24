@@ -4,6 +4,8 @@ import * as Yup from 'yup';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { SERVER_URL } from '@/config/constant';
+import { toast } from 'sonner';
+import { getCurrentFormattedDate } from '@/utils/common';
 
 interface AddDriverFormProps {
   setIsNew:(isNew:boolean)=> void;
@@ -50,12 +52,18 @@ const AddVehicleForm: React.FC<AddDriverFormProps> = ({setIsNew}) => {
 
       const result = await response.json();
       console.log("result",result)
-      alert('Vehicle added successfully!');
+      toast(`Vehicle added successfully!`, {
+        description: getCurrentFormattedDate(),
+        action: {
+            label: "Success",
+            onClick: () => console.info("Success"),
+        },
+    })
       resetForm();
       setIsNew(true)
     } catch (error) {
       console.error('Error:', error);
-      alert('There was an error adding the vehicle.');
+      toast.error(`'There was an error adding the vehicle.'`)
     } finally {
       setSubmitting(false);
     }

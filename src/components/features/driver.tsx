@@ -1,8 +1,8 @@
-import AddDriverForm from "@/components/feature/add-driver";
 import { DataTable } from "@/components/ui/data-table";
 import { SERVER_URL } from "@/config/constant";
 import { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
+import AddDriverForm from "../form/add-driver";
 interface User {
     id: number;
     name: string;

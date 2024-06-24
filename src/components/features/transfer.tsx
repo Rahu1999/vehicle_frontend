@@ -1,8 +1,8 @@
-import TransferVehicle from "@/components/feature/transfer-vehicle";
 import { DataTable } from "@/components/ui/data-table";
 import { SERVER_URL } from "@/config/constant";
 import { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
+import TransferVehicle from "../form/transfer-vehicle";
 interface Transfer {
   id: number;
   transferDate: string;

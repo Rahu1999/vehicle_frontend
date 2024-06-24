@@ -1,10 +1,9 @@
-import AddDriverForm from "@/components/feature/add-driver";
-import AddVehicleForm from "@/components/feature/add-vehicle";
 import { DataTable } from "@/components/ui/data-table";
 import { SERVER_URL } from "@/config/constant";
 import {  vehicleApiResponse } from "@/types/common.types";
 import { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
+import AddVehicleForm from "../form/add-vehicle";
 interface Vehicle {
   id: number;
   vehicleNumber: string;

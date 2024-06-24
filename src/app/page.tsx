@@ -1,10 +1,10 @@
 "use client"
 import CustomTabBar, { Tab } from "@/components/ui/tab-bar";
 import { useState } from "react";
-import Transfer from "./transfer";
-import Driver from "./driver";
-import Vehicle from "./vehicle";
-import Assigned from "./assign";
+import Transfer from "../components/features/transfer";
+import Driver from "../components/features/driver";
+import Vehicle from "../components/features/vehicle";
+import Assigned from "../components/features/assign";
 import { Toaster } from "@/components/ui/toaster";
 
 export default function Home() {

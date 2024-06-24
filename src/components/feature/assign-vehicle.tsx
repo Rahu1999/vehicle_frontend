@@ -27,10 +27,8 @@ interface AddDriverFormProps {
 }
 
 interface FormValues {
-    vehicleNumber: string;
-    vehicleType: string;
-    pucCertificate: File | null;
-    insuranceCertificate: File | null;
+    vehicleId: string;
+    driverId: string;
 }
 
 const validationSchema = Yup.object({
@@ -45,10 +43,15 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
     const [selectedVehicle, setSelectedVehicle] = React.useState<Vehicle>();
     const [openVehicle, setOpenVehicle] = React.useState(false);
     const [vehicles, setVehicles] = React.useState<Vehicle[]>([]);
+    const [vehicleError, setVehicleError] =React.useState(false);
 
     const [selectedDriver, setSelectedDriver] = React.useState<Driver>();
     const [openDriver, setOpenDriver] = React.useState(false);
     const [drivers, setDrivers] = React.useState<Driver[]>([]);
+    const [driverError, setDriverError] =React.useState(false);
+    const [isComplete, setIsComplete] = React.useState(false);
+
+
 
 
     useEffect(() => {
@@ -65,7 +68,7 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
             .catch(error => {
                 console.error("Error fetching vehicles:", error);
             });
-    }, []);
+    }, [isComplete]);
 
     useEffect(() => {
         fetch(`${SERVER_URL}/drivers`)
@@ -78,26 +81,31 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
           .catch(error => {
 
           });
-      }, []);
+      }, [isComplete]);
 
-    const initialValues: FormValues = {
-        vehicleNumber: '',
-        vehicleType: '',
-        pucCertificate: null,
-        insuranceCertificate: null
-    };
 
-    const handleSubmit = async (values: FormValues, { setSubmitting, resetForm }: any) => {
-        const formData = new FormData();
-        formData.append('vehicleNumber', values.vehicleNumber);
-        formData.append('vehicleType', values.vehicleType);
-        formData.append('pucCertificate', values.pucCertificate as Blob);
-        formData.append('insuranceCertificate', values.insuranceCertificate as Blob);
+
+    const handleSubmit = async () => {
+
+        if(!selectedVehicle){
+            setVehicleError(true)
+            return
+        }
+        if(!selectedDriver){
+            setDriverError(true)
+            return
+        }
+
+        const data = {vehicleId:selectedVehicle.id,driverId:selectedDriver.id}
+
 
         try {
-            const response = await fetch(`${SERVER_URL}/vehicles`, {
+            const response = await fetch(`${SERVER_URL}/assign-vehicles`, {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
             });
 
             if (!response.ok) {
@@ -105,28 +113,20 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
             }
 
             const result = await response.json();
-            console.log("result", result)
             alert('Vehicle added successfully!');
-            resetForm();
             setIsNew(true)
+            setIsComplete(true)
         } catch (error) {
             console.error('Error:', error);
             alert('There was an error adding the vehicle.');
         } finally {
-            setSubmitting(false);
+
         }
     };
 
     return (
         <div className='mb-3'>
-            <Formik
-                initialValues={initialValues}
-                validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-
-            >
-                {({ setFieldValue, handleChange, handleBlur, values, isSubmitting }) => (
-                    <Form className="flex flex-col md:flex-row md:items-center md:gap-4 mt-4 ">
+                    <div className="flex flex-col md:flex-row md:items-center md:gap-4 mt-4 ">
                         <div className="mb-4 md:mb-0">
                             <Label className="font-semibold" >Select Vehicle</Label>
                             <div className={`mt-2 `} >
@@ -139,7 +139,7 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
                                             className="w-[200px] justify-between"
                                         >
                                             {selectedVehicle
-                                                ? vehicles.find((vehicle) => vehicle.vehicleNumber === selectedVehicle.vehicleNumber)?.vehicleNumber
+                                                ? vehicles.find((vehicle) => vehicle.id === selectedVehicle.id)?.vehicleNumber
                                                 : "Select Vehicle..."}
                                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                         </Button>
@@ -157,12 +157,13 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
                                                             onSelect={(currentValue) => {
                                                                 setSelectedVehicle(vehicle)
                                                                 setOpenVehicle(false)
+                                                                setVehicleError(false)
                                                             }}
                                                         >
                                                             <Check
                                                                 className={cn(
                                                                     "mr-2 h-4 w-4",
-                                                                    selectedVehicle?.vehicleNumber === vehicle.vehicleNumber ? "opacity-100" : "opacity-0"
+                                                                    selectedVehicle?.id === vehicle.id ? "opacity-100" : "opacity-0"
                                                                 )}
                                                             />
                                                             {vehicle.vehicleNumber}
@@ -175,6 +176,7 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
                                 </Popover>
 
                             </div>
+                           {vehicleError? <span className="text-red-500 text-sm" >Vehicle Required</span>:null } 
                         </div>
                         <div className="mb-4 md:mb-0">
                         <Label className="font-semibold" >Select Driver</Label>
@@ -206,6 +208,7 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
                                                             onSelect={(currentValue) => {
                                                                 setSelectedDriver(driver)
                                                                 setOpenDriver(false)
+                                                                setDriverError(false)
                                                             }}
                                                         >
                                                             <Check
@@ -224,14 +227,14 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
                                 </Popover>
 
                             </div>
+                            {driverError? <span className="text-red-500 text-sm" >Driver Required</span>:null } 
                         </div>
-                        <Button type="submit" className="self-center mt-5 w-full md:w-auto" disabled={isSubmitting}>
-                            {isSubmitting ? 'Submitting...' : 'Assign Driver'}
+                        <Button type="submit" onClick={()=>handleSubmit()} className="self-center mt-5 w-full md:w-auto" >
+                            {'Assign Driver'}
                         </Button>
-                    </Form>
+                    </div>
 
-                )}
-            </Formik>
+              
         </div>
     );
 };

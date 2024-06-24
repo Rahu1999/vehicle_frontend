@@ -19,7 +19,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { Vehicle, vehicleApiResponse } from '@/types/common.types';
+import { Driver, Vehicle, driverApiResponse, vehicleApiResponse } from '@/types/common.types';
 import { cn } from '@/lib/utils';
 
 interface AddDriverFormProps {
@@ -46,9 +46,9 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
     const [openVehicle, setOpenVehicle] = React.useState(false);
     const [vehicles, setVehicles] = React.useState<Vehicle[]>([]);
 
-    const [selectedDriver, setSelectedDriver] = React.useState<Vehicle>();
+    const [selectedDriver, setSelectedDriver] = React.useState<Driver>();
     const [openDriver, setOpenDriver] = React.useState(false);
-    const [drivers, setDrivers] = React.useState<Vehicle[]>([]);
+    const [drivers, setDrivers] = React.useState<Driver[]>([]);
 
 
     useEffect(() => {
@@ -67,6 +67,18 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
             });
     }, []);
 
+    useEffect(() => {
+        fetch(`${SERVER_URL}/drivers`)
+          .then(response => response.json())
+          .then((data: driverApiResponse) => {
+            if (data.status === 200) {
+                setDrivers(data.data.result);
+            } 
+          })
+          .catch(error => {
+
+          });
+      }, []);
 
     const initialValues: FormValues = {
         vehicleNumber: '',
@@ -123,7 +135,7 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
                                         <Button
                                             variant="outline"
                                             role="combobox"
-                                            aria-expanded={open}
+                                            aria-expanded={openVehicle}
                                             className="w-[200px] justify-between"
                                         >
                                             {selectedVehicle
@@ -165,59 +177,56 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
                             </div>
                         </div>
                         <div className="mb-4 md:mb-0">
-                            <label htmlFor="vehicleType" className="block mb-2 text-sm font-medium text-gray-700">
-                                Vehicle Type<span className="text-red-600 pl-2">*</span>
-                            </label>
-                            <Input
-                                id="vehicleType"
-                                name="vehicleType"
-                                placeholder="Enter Vehicle Type"
-                                type="text"
-                                value={values.vehicleType}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
-                            />
-                            <ErrorMessage name="vehicleType" component="div" className="text-red-500 text-sm" />
-                        </div>
-                        <div className="mb-4 md:mb-0">
-                            <label htmlFor="pucCertificate" className="block text-sm font-medium text-gray-700">
-                                PUC Certificate <span className="text-red-600 pl-2">*</span>
-                            </label>
-                            <input
-                                id="pucCertificate"
-                                name="pucCertificate"
-                                type="file"
-                                accept="image/*"
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-300"
-                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                    if (event.currentTarget.files) {
-                                        setFieldValue('pucCertificate', event.currentTarget.files[0]);
-                                    }
-                                }}
-                            />
-                            <ErrorMessage name="pucCertificate" component="div" className="text-red-500 text-sm" />
-                        </div>
-                        <div className="mb-4 md:mb-0">
-                            <label htmlFor="insuranceCertificate" className="block text-sm font-medium text-gray-700">
-                                Insurance Certificate <span className="text-red-600 pl-2">*</span>
-                            </label>
-                            <input
-                                id="insuranceCertificate"
-                                name="insuranceCertificate"
-                                type="file"
-                                accept="image/*"
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-300"
-                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                    if (event.currentTarget.files) {
-                                        setFieldValue('insuranceCertificate', event.currentTarget.files[0]);
-                                    }
-                                }}
-                            />
-                            <ErrorMessage name="insuranceCertificate" component="div" className="text-red-500 text-sm" />
+                        <Label className="font-semibold" >Select Driver</Label>
+                            <div className={`mt-2 `} >
+                                <Popover open={openDriver} onOpenChange={setOpenDriver}>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            role="combobox"
+                                            aria-expanded={openDriver}
+                                            className="w-[200px] justify-between"
+                                        >
+                                            {selectedDriver
+                                                ? drivers.find((driver) => driver.id === selectedDriver.id)?.name
+                                                : "Select Driver..."}
+                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-[200px] p-0">
+                                        <Command>
+                                            <CommandInput placeholder="Search Driver..." />
+                                            <CommandList>
+                                                <CommandEmpty>No Driver found.</CommandEmpty>
+                                                <CommandGroup>
+                                                    {drivers.map((driver) => (
+                                                        <CommandItem
+                                                            key={driver.id}
+                                                            value={driver.name}
+                                                            onSelect={(currentValue) => {
+                                                                setSelectedDriver(driver)
+                                                                setOpenDriver(false)
+                                                            }}
+                                                        >
+                                                            <Check
+                                                                className={cn(
+                                                                    "mr-2 h-4 w-4",
+                                                                    selectedDriver?.id === driver.id ? "opacity-100" : "opacity-0"
+                                                                )}
+                                                            />
+                                                            {driver.name}
+                                                        </CommandItem>
+                                                    ))}
+                                                </CommandGroup>
+                                            </CommandList>
+                                        </Command>
+                                    </PopoverContent>
+                                </Popover>
+
+                            </div>
                         </div>
                         <Button type="submit" className="self-center mt-5 w-full md:w-auto" disabled={isSubmitting}>
-                            {isSubmitting ? 'Submitting...' : 'Add Driver'}
+                            {isSubmitting ? 'Submitting...' : 'Assign Driver'}
                         </Button>
                     </Form>
 

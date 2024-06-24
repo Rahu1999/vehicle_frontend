@@ -36,3 +36,10 @@ export interface vehicleApiResponse {
     result: Vehicle[];
   };
 }
+
+export interface driverApiResponse {
+  status: number;
+  data: {
+    result: Driver[];
+  };
+}

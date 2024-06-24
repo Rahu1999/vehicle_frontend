@@ -1,3 +1,4 @@
+import TransferVehicle from "@/components/feature/transfer-vehicle";
 import { DataTable } from "@/components/ui/data-table";
 import { SERVER_URL } from "@/config/constant";
 import { ColumnDef } from "@tanstack/react-table";
@@ -47,6 +48,7 @@ interface Transfer {
     };
   }
 export default function Transfer() {
+    const [isNew, setIsNew] = useState(false);
     const [users, setUsers] = useState<Transfer[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -65,7 +67,7 @@ export default function Transfer() {
             setError('Error fetching data');
             setLoading(false);
           });
-      }, []);
+      }, [isNew]);
 
       const columns: ColumnDef<Transfer>[] = [
         {
@@ -99,6 +101,7 @@ export default function Transfer() {
       if (error) return <p>{error}</p>;
     return (
         <div className="container" >
+          <TransferVehicle setIsNew={setIsNew}/>
             <DataTable columns={columns} data={users} />
         </div>
     );

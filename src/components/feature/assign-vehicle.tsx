@@ -1,7 +1,4 @@
 import React, { useEffect } from 'react';
-import { Formik, Form, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { SERVER_URL } from '@/config/constant';
 import { Label } from "@/components/ui/label";
@@ -26,17 +23,6 @@ interface AddDriverFormProps {
     setIsNew: (isNew: boolean) => void;
 }
 
-interface FormValues {
-    vehicleId: string;
-    driverId: string;
-}
-
-const validationSchema = Yup.object({
-    vehicleNumber: Yup.string().required('Vehicle Number is required'),
-    vehicleType: Yup.string().required('Vehicle Type is required'),
-    pucCertificate: Yup.mixed().required('PUC Certificate is required'),
-    insuranceCertificate: Yup.mixed().required('Insurance Certificate  is required'),
-});
 
 const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
 
@@ -136,7 +122,7 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
                                             variant="outline"
                                             role="combobox"
                                             aria-expanded={openVehicle}
-                                            className="w-[200px] justify-between"
+                                            className="w-[300px] justify-between"
                                         >
                                             {selectedVehicle
                                                 ? vehicles.find((vehicle) => vehicle.id === selectedVehicle.id)?.vehicleNumber
@@ -144,7 +130,7 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
                                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                         </Button>
                                     </PopoverTrigger>
-                                    <PopoverContent className="w-[200px] p-0">
+                                    <PopoverContent className="w-[300px] p-0">
                                         <Command>
                                             <CommandInput placeholder="Search Vehicle..." />
                                             <CommandList>
@@ -152,7 +138,7 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
                                                 <CommandGroup>
                                                     {vehicles.map((vehicle) => (
                                                         <CommandItem
-                                                            key={vehicle.vehicleNumber}
+                                                            key={vehicle.id}
                                                             value={vehicle.vehicleNumber}
                                                             onSelect={(currentValue) => {
                                                                 setSelectedVehicle(vehicle)
@@ -187,7 +173,7 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
                                             variant="outline"
                                             role="combobox"
                                             aria-expanded={openDriver}
-                                            className="w-[200px] justify-between"
+                                            className="w-[300px] justify-between"
                                         >
                                             {selectedDriver
                                                 ? drivers.find((driver) => driver.id === selectedDriver.id)?.name
@@ -195,7 +181,7 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
                                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                         </Button>
                                     </PopoverTrigger>
-                                    <PopoverContent className="w-[200px] p-0">
+                                    <PopoverContent className="w-[300px] p-0">
                                         <Command>
                                             <CommandInput placeholder="Search Driver..." />
                                             <CommandList>
@@ -229,7 +215,7 @@ const AssignVehicle: React.FC<AddDriverFormProps> = ({ setIsNew }) => {
                             </div>
                             {driverError? <span className="text-red-500 text-sm" >Driver Required</span>:null } 
                         </div>
-                        <Button type="submit" onClick={()=>handleSubmit()} className="self-center mt-5 w-full md:w-auto" >
+                        <Button type="submit" onClick={()=>handleSubmit()} className="self-center mt-7 w-full md:w-auto" >
                             {'Assign Driver'}
                         </Button>
                     </div>

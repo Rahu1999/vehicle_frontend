@@ -1,17 +1,11 @@
 import AssignVehicle from "@/components/feature/assign-vehicle";
 import { DataTable } from "@/components/ui/data-table";
 import { SERVER_URL } from "@/config/constant";
-import { AssignedVehicle } from "@/types/common.types";
+import { AssignedVehicle, AssignedVehicleApiResponse } from "@/types/common.types";
 import { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 
 // Define the type for the API response
-interface ApiResponse {
-  status: number;
-  data: {
-    result: AssignedVehicle[];
-  };
-}
 export default function Assigned() {
   const [isNew, setIsNew] = useState(false);
   const [vehicles, setVehicles] = useState<AssignedVehicle[]>([]);
@@ -20,7 +14,7 @@ export default function Assigned() {
   useEffect(() => {
     fetch(`${SERVER_URL}/assign-vehicles`)
       .then(response => response.json())
-      .then((data: ApiResponse) => {
+      .then((data: AssignedVehicleApiResponse) => {
         if (data.status === 200) {
           setVehicles(data.data.result);
         } else {

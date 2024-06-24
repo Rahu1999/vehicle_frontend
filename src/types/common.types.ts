@@ -43,3 +43,10 @@ export interface driverApiResponse {
     result: Driver[];
   };
 }
+
+export interface AssignedVehicleApiResponse {
+  status: number;
+  data: {
+    result: AssignedVehicle[];
+  };
+}
